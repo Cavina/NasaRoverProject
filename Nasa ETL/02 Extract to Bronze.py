@@ -1,21 +1,21 @@
 # Databricks notebook source
 import requests
 import json
-from pyspark.sql.functions import explode
+
 
 # COMMAND ----------
 
+def fetch_rover_data(rover, earth_date, api_key):
+    params = {"earth_date": earth_date, "api_key": api_key}
+    url = f"https://api.nasa.gov/mars-photos/api/v1/rovers/{rover}/photos?"
+    response = requests.get(url, params = params)
+    data = response.json()
+    photos = data.get('photos', [])
 
-params = {"earth_date":"2016-10-17", "api_key":"DEMO_KEY"}
-f = r"https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?"
-data = requests.get(f, params = params)
-payload = json.loads(data.text)
-payload_rdd = spark.sparkContext.parallelize([payload])
-
-df = spark.read.json(payload_rdd)
-
-df.printSchema()
-
+    if not photos:
+        raise Exception(f"No photos found for {rover} on {earth_date}")
+    else:
+        return photos
 
 # COMMAND ----------
 
@@ -23,4 +23,13 @@ s3_bronze_path = "s3a://databricks-workspace-stack-691e1-bucket/nasa_rover_bronz
 
 # COMMAND ----------
 
-df.write.mode("overwrite").json(s3_bronze_path)
+rovers = ["curiosity", "opportunity", "spirit"]
+
+for rover in rovers:
+    try:
+        photos = fetch_rover_data(rover, "2016-10-17", "DEMO_KEY")
+        df = spark.read.json(spark.sparkContext.parallelize([photos]))
+        df.write.mode("overwrite").json(f"{s3_bronze_path}/{rover}_data")
+    except Exception as e:
+        print(f"Exception: {e}")
+
