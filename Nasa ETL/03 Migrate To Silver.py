@@ -11,31 +11,59 @@ from pyspark.sql.types import StructType, StructField, StringType, IntegerType, 
 
 s3_bronze_path = "s3a://databricks-workspace-stack-691e1-bucket/nasa_rover_bronze/raw_data"
 s3_silver_path = "s3a://databricks-workspace-stack-691e1-bucket/nasa_rover_silver"
+rovers = ["curiosity", "opportunity", "spirit"]
 
 # COMMAND ----------
 
-bronze_df = spark.read.json(s3_bronze_path)
-bronze_df.printSchema()
-
+def read_rover_data_from_s3(rovers):
+    rover_data = {}
+    for rover in rovers:
+        try:
+            print(f"Reading data from {rover}")
+            df = spark.read.json(f"{s3_bronze_path}/{rover}_data")
+            df_with_rover_name = df.withColumn("rover_name", lit(rover))
+            rover_data[rover] = df_with_rover_name
+        except Exception as e:
+            print(f"Error reading data from {rover}")
+    return rover_data       
+    
 
 # COMMAND ----------
 
-df_exploded = bronze_df.withColumn("photo", explode(bronze_df["photos"]))
-df_final = df_exploded.drop("photos")
+rover_data_dict = read_rover_data_from_s3(rovers)
 
-df_final = df_final.select(
-    col("photo.id").alias("photo_id"),
-    "photo.sol",
-    "photo.earth_date",
-    "photo.camera",
-    "photo.img_src",
-    "photo.rover",
+for rover in rovers:
+    if rover in rover_data_dict:
+        #rover_data_dict[rover].show()
+        print(rover_data_dict[rover].count())
 
+# COMMAND ----------
+
+def union_rover_data(rover_data_dict):
+    dataframes = list(rover_data_dict.values())
+    unified_df = dataframes[0]
+    for d in dataframes[1:]:
+        unified_df = unified_df.union(d)
+
+    return unified_df
+
+# COMMAND ----------
+
+df_union = union_rover_data(rover_data_dict)
+
+# COMMAND ----------
+
+df_final = df_union.select(
+    col("id").alias("photo_id"),
+    "sol",
+    "earth_date",
+    "camera",
+    "img_src",
+    "rover",
+    "rover_name"
 )
 
-df_final.printSchema()
 df_final.show()
-
 
 # COMMAND ----------
 

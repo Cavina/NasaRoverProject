@@ -15,10 +15,6 @@ silver_df = spark.table("nasa_rover_silver.silver_mars_rover")
 
 # COMMAND ----------
 
-
-
-# COMMAND ----------
-
 silver_df.printSchema()
 
 # COMMAND ----------
