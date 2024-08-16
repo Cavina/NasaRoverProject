@@ -1,4 +1,8 @@
 # Databricks notebook source
+dbutils.widgets.removeAll()
+
+# COMMAND ----------
+
 from pyspark.sql.functions import explode, col, lit
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, ArrayType, StructType, StructField, LongType, FloatType, DoubleType, DateType
 
@@ -9,8 +13,7 @@ from pyspark.sql.types import StructType, StructField, StringType, IntegerType, 
 
 # COMMAND ----------
 
-s3_bronze_path = "s3a://databricks-workspace-stack-691e1-bucket/nasa_rover_bronze/raw_data"
-s3_silver_path = "s3a://databricks-workspace-stack-691e1-bucket/nasa_rover_silver"
+bronze_base_dir = dbutils.widgets.get('bronze_base_dir')
 rovers = ["curiosity", "opportunity", "spirit"]
 
 # COMMAND ----------
@@ -20,22 +23,13 @@ def read_rover_data_from_s3(rovers):
     for rover in rovers:
         try:
             print(f"Reading data from {rover}")
-            df = spark.read.json(f"{s3_bronze_path}/{rover}_data")
+            df = spark.read.json(f"{bronze_base_dir}/{rover}_data")
             df_with_rover_name = df.withColumn("rover_name", lit(rover))
             rover_data[rover] = df_with_rover_name
         except Exception as e:
             print(f"Error reading data from {rover}")
     return rover_data       
     
-
-# COMMAND ----------
-
-rover_data_dict = read_rover_data_from_s3(rovers)
-
-for rover in rovers:
-    if rover in rover_data_dict:
-        #rover_data_dict[rover].show()
-        print(rover_data_dict[rover].count())
 
 # COMMAND ----------
 
@@ -46,6 +40,10 @@ def union_rover_data(rover_data_dict):
         unified_df = unified_df.union(d)
 
     return unified_df
+
+# COMMAND ----------
+
+rover_data_dict = read_rover_data_from_s3(rovers)
 
 # COMMAND ----------
 
@@ -71,32 +69,3 @@ df_final.show()
 #Using saveAsTable saves it in the metastore.
 
 df_final.write.format("delta").mode("overwrite").saveAsTable("nasa_rover_silver.silver_mars_rover")
-
-# COMMAND ----------
-
-##TOODoO
-## Need to get schema and set up table with schema
-
-# spark.sql(f"""
-# CREATE TABLE IF NOT EXISTS silver_mars_rover
-# (
-#     id BIGINT,
-#     sol BIGINT,
-#     earth_date STRING,
-#     camera STRUCT<full_name: STRING, id: BIGINT, name: STRING, rover_id: BIGINT>,
-#     img_src STRING,
-#     rover STRUCT<
-#         cameras: ARRAY<STRUCT<full_name: STRING, name: STRING>>,
-#         id: BIGINT,
-#         landing_date: STRING,
-#         launch_date: STRING,
-#         max_date: STRING,
-#         max_sol: BIGINT,
-#         name: STRING,
-#         status: STRING,
-#         total_photos: BIGINT
-#     >
-# )
-# USING DELTA
-# OPTIONS (path "{s3_silver_path}")
-# """)

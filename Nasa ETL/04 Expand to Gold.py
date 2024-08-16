@@ -15,10 +15,6 @@ silver_df = spark.table("nasa_rover_silver.silver_mars_rover")
 
 # COMMAND ----------
 
-silver_df.printSchema()
-
-# COMMAND ----------
-
 photos_df = (silver_df.select(
     col("photo_id"),
     col("sol"),
@@ -42,7 +38,7 @@ rover_cameras_df = silver_df.select(
     col("camera.name").alias("camera_name")
 ).distinct()
 
-rover_cameras_df.show()
+
 
 # COMMAND ----------
 
@@ -53,7 +49,6 @@ photo_cameras_df = silver_df.select(
     col("camera.rover_id").alias("photo_rover_id")
 ).distinct()
 
-photo_cameras_df.show()
 
 # COMMAND ----------
 

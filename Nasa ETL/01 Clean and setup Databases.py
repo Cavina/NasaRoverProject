@@ -6,12 +6,6 @@
 
 # COMMAND ----------
 
-bronze_base_dir = 's3://databricks-workspace-stack-691e1-bucket/nasa_rover_bronze/raw_data'
-silver_base_dir = 's3://databricks-workspace-stack-691e1-bucket/nasa_rover_silver/databases'
-gold_base_dir = 's3://databricks-workspace-stack-691e1-bucket/nasa_rover_gold/databases'
-
-# COMMAND ----------
-
-dbutils.fs.rm(bronze_base_dir, recurse=True)
-dbutils.fs.rm(silver_base_dir, recurse=True)
-dbutils.fs.rm(gold_base_dir, recurse=True)
+dbutils.fs.rm(dbutils.widgets.get('bronze_base_dir'), recurse=True)
+dbutils.fs.rm(dbutils.widgets.get('silver_base_dir'), recurse=True)
+dbutils.fs.rm(dbutils.widgets.get('gold_base_dir'), recurse=True)

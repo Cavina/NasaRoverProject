@@ -1,10 +1,18 @@
 # Databricks notebook source
-dbutils.widgets.removeAll()
+# MAGIC %run "./01 Clean and setup Databases" $bronze_base_dir=s3://databricks-workspace-stack-691e1-bucket/nasa_rover_bronze/raw_data $silver_base_dir=s3://databricks-workspace-stack-691e1-bucket/nasa_rover_silver/databases $gold_base_dir=s3://databricks-workspace-stack-691e1-bucket/nasa_rover_gold/databases
 
 # COMMAND ----------
 
-dbutils.widgets.text('bronze_base_dir', '', label='Enter Target Base Dir')
+# MAGIC %run "./02 Extract to Bronze" $bronze_base_dir=s3://databricks-workspace-stack-691e1-bucket/nasa_rover_bronze/raw_data $earth_date=2016-10-17 $api_key=DEMO_KEY
 
 # COMMAND ----------
 
-bronze_base_dir = dbutils.widgets.get('bronze_base_dir')
+# MAGIC %run "./03 Migrate To Silver" $bronze_base_dir=s3://databricks-workspace-stack-691e1-bucket/nasa_rover_bronze/raw_data
+
+# COMMAND ----------
+
+# MAGIC %run "./04 Expand to Gold" 
+
+# COMMAND ----------
+
+# MAGIC %run "./05 Stats Tables" 
