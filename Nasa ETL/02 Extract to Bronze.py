@@ -1,4 +1,8 @@
 # Databricks notebook source
+dbutils.widgets.removeAll()
+
+# COMMAND ----------
+
 import requests
 import json
 
@@ -19,7 +23,9 @@ def fetch_rover_data(rover, earth_date, api_key):
 
 # COMMAND ----------
 
-s3_bronze_path = "s3a://databricks-workspace-stack-691e1-bucket/nasa_rover_bronze/raw_data"
+bronze_base_dir = dbutils.widgets.get('bronze_base_dir')
+earth_date = dbutils.widgets.get('earth_date')
+api_key = dbutils.widgets.get('api_key')
 
 # COMMAND ----------
 
@@ -27,9 +33,9 @@ rovers = ["curiosity", "opportunity", "spirit"]
 
 for rover in rovers:
     try:
-        photos = fetch_rover_data(rover, "2016-10-17", "DEMO_KEY")
+        photos = fetch_rover_data(rover, earth_date, api_key)
         df = spark.read.json(spark.sparkContext.parallelize([photos]))
-        df.write.mode("overwrite").json(f"{s3_bronze_path}/{rover}_data")
+        df.write.mode("overwrite").json(f"{bronze_base_dir}/{rover}_data")
     except Exception as e:
         print(f"Exception: {e}")
 
