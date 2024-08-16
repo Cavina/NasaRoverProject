@@ -119,7 +119,7 @@ photo_distribution_df = photos_df.groupBy("rover_id", "camera_id").agg(
     count("photo_id").alias("photo_count")
 ).join(
     cameras_df, 
-    photos_df["camera_id"] == cameras_df["camera_id"],  # Explicit join condition
+    photos_df["camera_id"] == cameras_df["camera_id"], 
     how="left"
 ).select(
     photos_df["rover_id"],
