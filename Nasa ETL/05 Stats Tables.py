@@ -20,7 +20,7 @@ photos_summary_df = photos_df.groupBy("sol").agg(
     first("rover_id").alias("rover_id")
 ).orderBy("sol")
 
-photos_summary_df.show()
+photos_summary_df.display()
 
 # COMMAND ----------
 
@@ -42,7 +42,7 @@ camera_usage_df = photos_df.groupBy("camera_id").agg(
     col("photo_count")
 ).orderBy(col("photo_count").desc())
 
-camera_usage_df.show()
+camera_usage_df.display()
 
 # COMMAND ----------
 
@@ -84,7 +84,7 @@ camera_efficiency_df = photos_df.groupBy("camera_id", "rover_id").agg(
     "efficiency_score"
 ).orderBy(col("efficiency_score").desc())
 
-camera_efficiency_df.show()
+camera_efficiency_df.display()
 
 
 # COMMAND ----------
@@ -104,7 +104,7 @@ rover_deployment_df = mission_manifest_df.select(
     datediff(current_date(), col("rover_landing_date")).alias("mission_duration")
 ).orderBy("rover_landing_date")
 
-rover_deployment_df.show()
+rover_deployment_df.display()
 
 # COMMAND ----------
 

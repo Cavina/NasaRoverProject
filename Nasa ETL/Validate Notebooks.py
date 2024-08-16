@@ -1,5 +1,6 @@
 # Databricks notebook source
-# MAGIC %run "./01 Clean and setup Databases" $bronze_base_dir=s3://databricks-workspace-stack-691e1-bucket/nasa_rover_bronze/raw_data $silver_base_dir=s3://databricks-workspace-stack-691e1-bucket/nasa_rover_silver/databases $gold_base_dir=s3://databricks-workspace-stack-691e1-bucket/nasa_rover_gold/databases
+# MAGIC %run "./01 Clean and setup Databases" $bronze_base_dir=s3://databricks-workspace-stack-691e1-bucket/nasa_rover_bronze/raw_data $silver_base_dir=s3://databricks-workspace-stack-691e1-bucket/nasa_rover_silver/databases
+# MAGIC $gold_base_dir=s3://databricks-workspace-stack-691e1-bucket/nasa_rover_gold/databases
 
 # COMMAND ----------
 
