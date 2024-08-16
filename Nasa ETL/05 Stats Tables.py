@@ -1,5 +1,5 @@
 # Databricks notebook source
-from pyspark.sql.functions import count, countDistinct, col, avg, max, datediff, current_date
+from pyspark.sql.functions import count, countDistinct, col, avg, max, datediff, current_date, first
 
 # COMMAND ----------
 
@@ -17,7 +17,7 @@ cameras_df = spark.table("nasa_rover_gold.camera")
 photos_summary_df = photos_df.groupBy("sol").agg(
     count("photo_id").alias("photo_count"),
     countDistinct("camera_id").alias("camera_count"),
-    countDistinct("rover_id").alias("rover_count")
+    first("rover_id").alias("rover_id")
 ).orderBy("sol")
 
 photos_summary_df.show()
@@ -33,12 +33,13 @@ camera_usage_df = photos_df.groupBy("camera_id").agg(
     count("photo_id").alias("photo_count")
 ).join(
     cameras_df,
-    photos_df["camera_id"] == cameras_df["id"], 
+    photos_df["camera_id"] == cameras_df["camera_id"], 
     how="left"
 ).select(
     photos_df["camera_id"],
-    col("name").alias("camera_name"),  
-    "photo_count"
+    col("camera_name").alias("camera_name"),
+    col("rover_id"),
+    col("photo_count")
 ).orderBy(col("photo_count").desc())
 
 camera_usage_df.show()
@@ -74,10 +75,10 @@ rover_activity_df.show()
 camera_efficiency_df = photos_df.groupBy("camera_id", "rover_id").agg(
     count("photo_id").alias("photo_count"),
     (count("photo_id") / countDistinct("sol")).alias("efficiency_score")
-).join(cameras_df, photos_df["camera_id"] == cameras_df["id"], how="left") \
+).join(cameras_df, photos_df["camera_id"] == cameras_df["camera_id"], how="left") \
 .select(
     photos_df["camera_id"],
-    cameras_df["name"].alias("camera_name"),
+    cameras_df["camera_name"].alias("camera_name"),
     photos_df["rover_id"],
     "photo_count",
     "efficiency_score"
@@ -99,6 +100,7 @@ rover_deployment_df = mission_manifest_df.select(
     "rover_name",
     "rover_landing_date",
     "rover_launch_date",
+    "rover_status",
     datediff(current_date(), col("rover_landing_date")).alias("mission_duration")
 ).orderBy("rover_landing_date")
 
@@ -117,12 +119,12 @@ photo_distribution_df = photos_df.groupBy("rover_id", "camera_id").agg(
     count("photo_id").alias("photo_count")
 ).join(
     cameras_df, 
-    photos_df["camera_id"] == cameras_df["id"],  # Explicit join condition
+    photos_df["camera_id"] == cameras_df["camera_id"],  # Explicit join condition
     how="left"
 ).select(
     photos_df["rover_id"],
     photos_df["camera_id"],
-    cameras_df["name"].alias("camera_name"),  # Assuming 'name' is the correct column for 'camera_name'
+    cameras_df["camera_name"],
     "photo_count"
 ).orderBy(col("photo_count").desc())
 
