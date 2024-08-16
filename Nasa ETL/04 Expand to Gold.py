@@ -33,7 +33,43 @@ photos_df.show()
 
 # COMMAND ----------
 
-photos_df.count()
+rover_cameras_df = silver_df.select(
+    col("rover.id").alias("rover_id"),
+    explode(col("rover.cameras")).alias("camera")
+).select(
+    col("rover_id"),
+    col("camera.full_name").alias("camera_full_name"),
+    col("camera.name").alias("camera_name")
+)
+
+rover_cameras_df.show()
+
+# COMMAND ----------
+
+photo_cameras_df = silver_df.select(
+    col("camera.full_name").alias("photo_camera_full_name"),
+    col("camera.name").alias("photo_camera_name"),
+    col("camera.id").alias("photo_camera_id"),
+    col("camera.rover_id").alias("photo_rover_id")
+)
+
+photo_cameras_df.show()
+
+# COMMAND ----------
+
+camera_details_df = rover_cameras_df.join(
+    photo_cameras_df,
+    (rover_cameras_df.camera_name == photo_cameras_df.photo_camera_name) & 
+    (rover_cameras_df.rover_id == photo_cameras_df.photo_rover_id),
+    how="left"
+).select(
+    col("rover_id"),
+    col("camera_name"),
+    col("camera_full_name").alias("photo_camera_full_name"),
+    col("photo_camera_id").alias("camera_id")
+).distinct()
+
+camera_details_df.show()
 
 # COMMAND ----------
 
@@ -54,27 +90,6 @@ mission_manifest_final_df.show()
 
 # COMMAND ----------
 
-mission_manifest_final_df.count()
-
-# COMMAND ----------
-
-camera_exploded = silver_df.select(col("camera.*"))
-
-camera_final_df = camera_exploded.select(
-  col("id"),
-  col("full_name"),
-  col("name"),
-  col("rover_id")
-  ).distinct()
-
-camera_final_df.show()
-
-# COMMAND ----------
-
-camera_final_df.count()
-
-# COMMAND ----------
-
 photos_df.write.format("delta").mode("overwrite").saveAsTable("nasa_rover_gold.photos")
 
 # COMMAND ----------
@@ -83,4 +98,4 @@ mission_manifest_final_df.write.format("delta").mode("overwrite").saveAsTable("n
 
 # COMMAND ----------
 
-camera_final_df.write.format("delta").mode("overwrite").saveAsTable("nasa_rover_gold.camera")
+camera_details_df.write.format("delta").mode("overwrite").saveAsTable("nasa_rover_gold.camera")
