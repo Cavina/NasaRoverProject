@@ -40,7 +40,7 @@ rover_cameras_df = silver_df.select(
     col("rover_id"),
     col("camera.full_name").alias("camera_full_name"),
     col("camera.name").alias("camera_name")
-)
+).distinct()
 
 rover_cameras_df.show()
 
@@ -51,7 +51,7 @@ photo_cameras_df = silver_df.select(
     col("camera.name").alias("photo_camera_name"),
     col("camera.id").alias("photo_camera_id"),
     col("camera.rover_id").alias("photo_rover_id")
-)
+).distinct()
 
 photo_cameras_df.show()
 
