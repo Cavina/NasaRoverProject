@@ -8,7 +8,7 @@ This repository contains an ETL (Extract, Transform, Load) pipeline for NASA Mar
 
 1. **Data Extraction**:
    - Extract Mars Rover data from NASA's Mars Rover API.
-   - The data includes rover and camera information, as well as urls to the individual images.
+   - The data includes rover and camera information, as well as URLs to the individual images.
 
 2. **Data Storage**:
    - Utilize the medallion architecture to store data in three layers:
@@ -21,21 +21,28 @@ This repository contains an ETL (Extract, Transform, Load) pipeline for NASA Mar
    - Perform various transformations to prepare data for analysis.
 
 4. **Data Analytics**:
-   - Analyze and display rover and camera data, such as mission durations, photo counts per camera and more.
+   - Analyze and display rover and camera data, such as mission durations, photo counts per camera, and more.
    - Compute statistics for individual images, including RGB intensity and frequency domain intensity.
 
 5. **Dashboard Creation**:
-   - Develop interactive dashboards to visualize rover and camera data.  The camera and rover data was used to create a dashboard in databricks.
+   - Develop interactive dashboards to visualize rover and camera data. The camera and rover data was used to create a dashboard in Databricks.
    - Include visualizations for image data, RGB histograms, and frequency domain magnitude spectra.
 
-     Example dashboards
-     
-     A dashboard displaying camera and rover analytics such as mission duration for the Curiosity and Opportunity, photo distribution by camera.
-   - ![Mars Rover](images/camera_dash.png)
-  
-   - ![Mars Rover](images/db_1.png)
-  
-   - ![Mars Rover](images/db_2.png)
+---
+
+**Example Dashboards**
+
+- **Camera and Rover Analytics Dashboard**: Displays mission duration for the Curiosity and Opportunity rovers, photo distribution by camera.
+  - ![Camera and Rover Analytics](images/camera_dash.png)
+
+---
+
+- **Image Data Analysis Dashboards**: Includes the photo extracted from the URL, RGB intensity, and Frequency Spectrum Magnitude.
+  - ![Image Data Dashboard 1](images/db_1.png)
+
+---
+
+  - ![Image Data Dashboard 2](images/db_2.png)
 
 ## Getting Started
 
@@ -51,7 +58,9 @@ This repository contains an ETL (Extract, Transform, Load) pipeline for NASA Mar
 
    ```bash
    git clone https://github.com/yourusername/mars-rover-etl.git
-1. **Configure Databricks**:
+
+   
+2. **Configure Databricks**:
    - Upload the notebooks to Databricks.
    - Set up your AWS S3 bucket and configure access credentials.
   
