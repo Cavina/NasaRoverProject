@@ -57,7 +57,7 @@ This repository contains an ETL (Extract, Transform, Load) pipeline for NASA Mar
 1. **Clone the Repository**:
 
    ```bash
-   git clone https://github.com/yourusername/mars-rover-etl.git
+   git clone https://github.com/Cavina/NasaRoverProject.git
 
    
 2. **Configure Databricks**:
