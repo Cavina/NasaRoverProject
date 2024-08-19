@@ -26,7 +26,16 @@ This repository contains an ETL (Extract, Transform, Load) pipeline for NASA Mar
 
 5. **Dashboard Creation**:
    - Develop interactive dashboards to visualize rover and camera data.  The camera and rover data was used to create a dashboard in databricks.
-   - Include visualizations for image data, RGB histograms, and frequency domain magnitude spectra.  
+   - Include visualizations for image data, RGB histograms, and frequency domain magnitude spectra.
+
+     Example dashboards
+     
+     A dashboard displaying camera and rover analytics such as mission duration for the Curiosity and Opportunity, photo distribution by camera.
+   - ![Mars Rover](images/camera_dash.png)
+  
+   - ![Mars Rover](images/db_1.png)
+  
+   - ![Mars Rover](images/db_2.png)
 
 ## Getting Started
 
