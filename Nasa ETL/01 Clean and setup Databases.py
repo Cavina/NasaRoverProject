@@ -1,4 +1,9 @@
 # Databricks notebook source
+# MAGIC %md
+# MAGIC Clean up databases and filepaths before beginning.
+
+# COMMAND ----------
+
 # MAGIC %sql
 # MAGIC DROP DATABASE IF EXISTS nasa_rover_bronze CASCADE;
 # MAGIC DROP DATABASE IF EXISTS nasa_rover_silver CASCADE;

@@ -18,6 +18,13 @@ rovers = ["curiosity", "opportunity", "spirit"]
 
 # COMMAND ----------
 
+'''
+Reads data from S3 location and returns a 
+dictionary of dataframes, where the keys
+are the rover names and the values are the dataframes.
+
+'''
+
 def read_rover_data_from_s3(rovers):
     rover_data = {}
     for rover in rovers:
@@ -32,6 +39,10 @@ def read_rover_data_from_s3(rovers):
     
 
 # COMMAND ----------
+
+'''
+Unions the disjoint rover dataframes into a single dataframe.
+'''
 
 def union_rover_data(rover_data_dict):
     dataframes = list(rover_data_dict.values())
@@ -51,6 +62,7 @@ df_union = union_rover_data(rover_data_dict)
 
 # COMMAND ----------
 
+
 df_final = df_union.select(
     col("id").alias("photo_id"),
     "sol",
@@ -65,7 +77,7 @@ df_final.show()
 
 # COMMAND ----------
 
-#This used to be save to the s3 bucket directly.
-#Using saveAsTable saves it in the metastore.
+# This used to be save to the s3 bucket directly.
+# Using saveAsTable saves it in the metastore.
 
 df_final.write.format("delta").mode("overwrite").saveAsTable("nasa_rover_silver.silver_mars_rover")

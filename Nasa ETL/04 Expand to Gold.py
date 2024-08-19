@@ -9,11 +9,13 @@ from pyspark.sql.functions import explode, col, lit
 
 # COMMAND ----------
 
+# Retrieves the data in silver
 silver_df = spark.table("nasa_rover_silver.silver_mars_rover")
 
 
-
 # COMMAND ----------
+
+# Creates a dataframe for the photos table
 
 photos_df = (silver_df.select(
     col("photo_id"),
@@ -29,6 +31,8 @@ photos_df.show()
 
 # COMMAND ----------
 
+# Creates a data from for rover.cameras
+# This would be a list of all cameras on a rover.
 rover_cameras_df = silver_df.select(
     col("rover.id").alias("rover_id"),
     explode(col("rover.cameras")).alias("camera")
@@ -42,6 +46,8 @@ rover_cameras_df = silver_df.select(
 
 # COMMAND ----------
 
+# Creates a data frame for cameras
+# that represents all the cameras that have taken photos
 photo_cameras_df = silver_df.select(
     col("camera.full_name").alias("photo_camera_full_name"),
     col("camera.name").alias("photo_camera_name"),
@@ -51,6 +57,11 @@ photo_cameras_df = silver_df.select(
 
 
 # COMMAND ----------
+
+# Create the camera details table by joining the two previous dataframes.
+# This table is a list of all cameras for each rover, 
+# including the cameras that did not take photos.
+# It diplays the rover_id, camera name, camera full name, and the camera_id.
 
 camera_details_df = rover_cameras_df.join(
     photo_cameras_df,
@@ -67,6 +78,8 @@ camera_details_df = rover_cameras_df.join(
 camera_details_df.show()
 
 # COMMAND ----------
+
+# Flattens and creates the mission manifest from the rover.
 
 manifest_exploded = silver_df.withColumn("cameras", explode(silver_df["rover.cameras"]))
 
@@ -85,6 +98,7 @@ mission_manifest_final_df.show()
 
 # COMMAND ----------
 
+#Write the specific tables to the delta lake.
 photos_df.write.format("delta").mode("overwrite").saveAsTable("nasa_rover_gold.photos")
 
 # COMMAND ----------
